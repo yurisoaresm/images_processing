@@ -16,22 +16,27 @@ class Imagem:
         self.pixels = pixels
 
     def get_pixel(self, x, y):
-        return self.pixels[x, y]
+        if x >= self.largura:
+            x = self.largura - 1
+        elif y >= self.altura:
+            y = self.altura - 1
+
+        return self.pixels[(x + y * self.largura)]
 
     def set_pixel(self, x, y, c):
-        self.pixels[x, y] = c
+        self.pixels[(x + y * self.largura)] = c
 
     def aplicar_por_pixel(self, func):
-        resultado = Imagem.new(self.altura, self.largura)
+        resultado = Imagem.new(self.largura, self.altura)
         for x in range(resultado.largura):
             for y in range(resultado.altura):
                 cor = self.get_pixel(x, y)
                 nova_cor = func(cor)
-            resultado.set_pixel(y, x, nova_cor)
+                resultado.set_pixel(x, y, nova_cor)
         return resultado
 
     def invertido(self):
-        return self.aplicar_por_pixel(lambda c: 256 - c)
+        return self.aplicar_por_pixel(lambda c: 255 - c)
 
     def borrado(self, n):
         raise NotImplementedError
@@ -79,7 +84,7 @@ class Imagem:
     @classmethod
     def new(cls, largura, altura):
         """
-        Cria uma nova imagem em branco (tudo 0) para uma dada largura e altura.
+        Cria uma nova imagem vazia (blank image) (tudo 0) para uma dada largura e altura.
 
         Modo de uso:
             i = Imagem.new(640, 480)
@@ -125,8 +130,8 @@ class Imagem:
         # highlightthickness=0 é um hack para evitar que o redimensionamento da janela
         # dispare outro evendo de redimensionamento (causando um loop infinito). Veja
         # https://stackoverflow.com/questions/22838255/tkinter-canvas-resizing-automatically
-        canvas = tkinter.Canvas(toplevel, altura=self.altura,
-                                largura=self.largura, highlightthickness=0)
+        canvas = tkinter.Canvas(toplevel, height=self.altura,
+                                width=self.largura, highlightthickness=0)
         canvas.pack()
         canvas.img = tkinter.PhotoImage(data=self.gif_data())
         canvas.create_image(0, 0, image=canvas.img, anchor=tkinter.NW)
@@ -141,17 +146,17 @@ class Imagem:
             #  * Mostrar essa imagem no canvas
             new_img = PILImage.new(mode='L', size=(self.largura, self.altura))
             new_img.putdata(self.pixels)
-            new_img = new_img.resize((event.largura, event.altura), PILImage.NEAREST)
+            new_img = new_img.resize((event.width, event.height), PILImage.NEAREST)
             buff = BytesIO()
             new_img.save(buff, 'GIF')
             canvas.img = tkinter.PhotoImage(data=base64.b64encode(buff.getvalue()))
-            canvas.configure(height=event.altura, width=event.largura)
+            canvas.configure(height=event.height, width=event.width)
             canvas.create_image(0, 0, image=canvas.img, anchor=tkinter.NW)
 
         # Finalmente, vincular essa função para que ela seja chamada
         # quando a janela for redimensionada.
         canvas.bind('<Configure>', on_resize)
-        toplevel.bind('<Configure>', lambda e: canvas.configure(height=e.altura, width=e.largura))
+        toplevel.bind('<Configure>', lambda e: canvas.configure(height=e.height, width=e.width))
 
         # when the window is closed, the program should stop
         toplevel.protocol('WM_DELETE_WINDOW', tk_root.destroy)
