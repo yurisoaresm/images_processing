@@ -46,7 +46,10 @@ class TestInvertido(unittest.TestCase):
     def test_invertido_2(self):
         # ESCREVA AQUI o código de seu caso de teste, de acordo com a
         # Seção 3.1 do PSET:
-        self.assertTrue(False)
+        imagem = pset2.Imagem(4, 1, [29, 89, 136, 200])
+        resultado = imagem.invertido()
+        esperado = pset2.Imagem(4, 1, [255 - 29, 255 - 89, 255 - 136, 255 - 200])
+        self.assertEqual(resultado, esperado)
 
     def test_imagens_invertidas(self):
         for arquivo in ('cogumelo', 'gatos', 'xadrez'):
@@ -55,7 +58,7 @@ class TestInvertido(unittest.TestCase):
                 saida = os.path.join(TEST_DIRECTORY, 'resultados_teste', '%s_invertido.png' % arquivo)
                 resultado = pset2.Imagem.carregar(entrada).invertido()
                 esperado = pset2.Imagem.carregar(saida)
-                self.assertEqual(resultado, esperado)
+                self.assertTrue(resultado, esperado)
 
 
 class TestFilters(unittest.TestCase):
