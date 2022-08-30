@@ -181,6 +181,11 @@ if __name__ == '__main__':
     #  bom lugar para gerar imagens, etc.
     pass
 
+    # Questão 2 --------------
+    # i = Imagem.carregar('imagens_teste/peixe.png')
+    # temp = i.invertido()
+    # temp.salvar('resultados_teste/peixe_invertido.png')
+
     # O código a seguir fará com que as janelas em Imagem.show
     # sejam mostradas de modo apropriado, se estivermos rodando
     # interativamente ou não:
