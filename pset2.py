@@ -18,8 +18,12 @@ class Imagem:
     def get_pixel(self, x, y):
         if x >= self.largura:
             x = self.largura - 1
-        elif y >= self.altura:
+        elif x < 0:
+            x = 0
+        if y >= self.altura:
             y = self.altura - 1
+        elif y < 0:
+            y = 0
 
         return self.pixels[(x + y * self.largura)]
 
@@ -34,6 +38,18 @@ class Imagem:
                 nova_cor = func(cor)
                 resultado.set_pixel(x, y, nova_cor)
         return resultado
+
+    def correlacao(self, kernel):
+        meio = len(kernel) // 2           # meio do kernel independente do seu tamanho
+        imagem_temp = Imagem.new(self.largura, self.altura)
+        for i in range(imagem_temp.largura):
+            for j in range(imagem_temp.altura):
+                new_pixel = 0
+                for m in range(len(kernel)):
+                    for n in range(len(kernel)):
+                        new_pixel += self.get_pixel((i - meio + n), (j - meio + m)) * kernel[m][n]
+                imagem_temp.set_pixel(i, j, new_pixel)
+        return imagem_temp
 
     def invertido(self):
         return self.aplicar_por_pixel(lambda c: 255 - c)
@@ -185,6 +201,19 @@ if __name__ == '__main__':
     # i = Imagem.carregar('imagens_teste/peixe.png')
     # temp = i.invertido()
     # temp.salvar('resultados_teste/peixe_invertido.png')
+
+    # Questão 3 --------------
+    # i = Imagem.carregar('imagens_teste/porco.png')
+    # temp = i.correlacao([[0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                      [0, 0, 0, 0, 0, 0, 0, 0, 0]])
+    # temp.salvar('resultados_teste/porco_correlacao.png')
 
     # O código a seguir fará com que as janelas em Imagem.show
     # sejam mostradas de modo apropriado, se estivermos rodando
