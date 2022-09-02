@@ -9,6 +9,10 @@ from io import BytesIO
 from PIL import Image as PILImage
 
 
+def gerar_kernel_desfoque(n):
+    return [[1 / (n ** 2) for _ in range(n)] for _ in range(n)]
+
+
 class Imagem:
     def __init__(self, largura, altura, pixels):
         self.largura = largura
@@ -38,6 +42,16 @@ class Imagem:
                 nova_cor = func(cor)
                 resultado.set_pixel(x, y, nova_cor)
         return resultado
+    
+    def arredondar_kernel(self):
+        for i in range(self.largura):
+            for j in range(self.altura):
+                pixel = self.get_pixel(i, j)
+                if pixel < 0:
+                    pixel = 0
+                elif pixel > 255:
+                    pixel = 255
+                self.set_pixel(i, j, round(pixel))
 
     def correlacao(self, kernel):
         meio = len(kernel) // 2           # meio do kernel independente do seu tamanho
@@ -55,7 +69,7 @@ class Imagem:
         return self.aplicar_por_pixel(lambda c: 255 - c)
 
     def borrado(self, n):
-        raise NotImplementedError
+        return self.correlacao(gerar_kernel_desfoque(n))
 
     def focado(self, n):
         raise NotImplementedError
@@ -214,6 +228,11 @@ if __name__ == '__main__':
     #                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
     #                      [0, 0, 0, 0, 0, 0, 0, 0, 0]])
     # temp.salvar('resultados_teste/porco_correlacao.png')
+
+    i = Imagem.carregar('imagens_teste/peixe.png')
+    temp = i.borrado(5)
+    i.mostrar()
+    temp.mostrar()
 
     # O código a seguir fará com que as janelas em Imagem.show
     # sejam mostradas de modo apropriado, se estivermos rodando
