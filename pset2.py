@@ -42,8 +42,8 @@ class Imagem:
                 nova_cor = func(cor)
                 resultado.set_pixel(x, y, nova_cor)
         return resultado
-    
-    def arredondar_kernel(self):
+
+    def arredondar_pixels_imagens(self):
         for i in range(self.largura):
             for j in range(self.altura):
                 pixel = self.get_pixel(i, j)
@@ -63,6 +63,7 @@ class Imagem:
                     for n in range(len(kernel)):
                         new_pixel += self.get_pixel((i - meio + n), (j - meio + m)) * kernel[m][n]
                 imagem_temp.set_pixel(i, j, new_pixel)
+        imagem_temp.arredondar_pixels_imagens()
         return imagem_temp
 
     def invertido(self):
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     # temp.salvar('resultados_teste/porco_correlacao.png')
 
     i = Imagem.carregar('imagens_teste/peixe.png')
-    temp = i.borrado(5)
+    temp = i.borrado(7)
     i.mostrar()
     temp.mostrar()
 
