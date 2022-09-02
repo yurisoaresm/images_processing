@@ -230,10 +230,10 @@ if __name__ == '__main__':
     #                      [0, 0, 0, 0, 0, 0, 0, 0, 0]])
     # temp.salvar('resultados_teste/porco_correlacao.png')
 
-    i = Imagem.carregar('imagens_teste/peixe.png')
-    temp = i.borrado(7)
-    i.mostrar()
-    temp.mostrar()
+    # Tópico 5.1: Desfoque | aplicar filtro na imagem gato com um kernel de desfoque de tamanho 5
+    # i = Imagem.carregar('imagens_teste/gato.png')
+    # temp = i.borrado(5)
+    # temp.salvar('resultados_teste/gato_borrado.png')
 
     # O código a seguir fará com que as janelas em Imagem.show
     # sejam mostradas de modo apropriado, se estivermos rodando
