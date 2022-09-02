@@ -63,7 +63,6 @@ class Imagem:
                     for n in range(len(kernel)):
                         new_pixel += self.get_pixel((i - meio + n), (j - meio + m)) * kernel[m][n]
                 imagem_temp.set_pixel(i, j, new_pixel)
-        imagem_temp.arredondar_pixels_imagens()
         return imagem_temp
 
     def invertido(self):
@@ -72,11 +71,24 @@ class Imagem:
     def borrado(self, n):
         return self.correlacao(gerar_kernel_desfoque(n))
 
-    def focado(self, n):
-        raise NotImplementedError
+    def nitidez(self, n):
+        img_borrada = self.borrado(n)
+        img_nitidez = Imagem.new(self.largura, self.altura)
+        for i in range(self.largura):
+            for j in range(self.altura):
+                s = round(2 * self.get_pixel(i, j) - img_borrada.get_pixel(i, j))
+                img_nitidez.set_pixel(i, j, s)
+        return img_nitidez
 
-    def bordas(self):
-        raise NotImplementedError
+    def bordas(self, k1, k2):
+        img1 = self.correlacao(k1)
+        img2 = self.correlacao(k2)
+        img_bordas = Imagem.new(self.largura, self.altura)
+        for i in range(self.largura):
+            for j in range(self.altura):
+                o = round(math.sqrt(img1.get_pixel(i, j) ** 2 + img2.get_pixel(i, j) ** 2))
+                img_bordas.set_pixel(i, j, o)
+        return img_bordas
 
     # Abaixo deste ponto estão utilitários para carregar, salvar,
     # mostrar e testar imagens.
@@ -233,7 +245,24 @@ if __name__ == '__main__':
     # Tópico 5.1: Desfoque | aplicar filtro na imagem gato com um kernel de desfoque de tamanho 5
     # i = Imagem.carregar('imagens_teste/gato.png')
     # temp = i.borrado(5)
+    # temp.arredondar_pixels_imagens()
     # temp.salvar('resultados_teste/gato_borrado.png')
+
+    # Questão 5 --------------
+    # Aplicar filtro de nitidez com kernel de tamanho 11 na imagem python.png
+    # i = Imagem.carregar('imagens_teste/python.png')
+    # temp = i.nitidez(11)
+    # temp.salvar('resultados_teste/python_nitidez.png')
+
+    # Questão 6 --------------
+    # Aplicar o filtro de detecção de bordas com dois kernels na imagem obra.png
+    # i = Imagem.carregar('imagens_teste/obra.png')
+    # temp = i.bordas([[-1, 0, 1],
+    #                  [-2, 0, 2],
+    #                  [-1, 0, 1]], [[-1, -2, -1],
+    #                                [0,   0,  0],
+    #                                [1,   2,  1]])
+    # temp.salvar('resultados_teste/obra_bordas.png')
 
     # O código a seguir fará com que as janelas em Imagem.show
     # sejam mostradas de modo apropriado, se estivermos rodando
