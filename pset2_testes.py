@@ -95,17 +95,11 @@ class TestFilters(unittest.TestCase):
     def test_bordas(self):
         for arquivo in ('cogumelo', 'gatos', 'xadrez'):
             with self.subTest(f=arquivo):
-                k1 = [[-1, 0, 1],
-                      [-2, 0, 2],
-                      [-1, 0, 1]]
-                k2 = [[-1, -2, -1],
-                      [0,   0,  0],
-                      [1,   2,  1]]
                 entrada = os.path.join(TEST_DIRECTORY, 'imagens_teste', '%s.png' % arquivo)
                 saida = os.path.join(TEST_DIRECTORY, 'resultados_teste', '%s_edges.png' % arquivo)
                 input_img = pset2.Imagem.carregar(entrada)
                 input_img_copy = pset2.Imagem(input_img.largura, input_img.altura, input_img.pixels)
-                resultado = input_img.bordas(k1, k2)
+                resultado = input_img.bordas()
                 esperado = pset2.Imagem.carregar(saida)
                 self.assertEqual(input_img, input_img_copy,
                                  "Cuidado para não modificar a imagem original!")
