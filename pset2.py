@@ -142,16 +142,23 @@ class Imagem:
         img_nitidez.corrigir_pixel_imagem()
         return img_nitidez
 
-    def bordas(self, k1, k2):
+    def bordas(self):
         """
-        Retorna a imagem com o filtro de detecção de bordas. Recebe dois kernels específicos.
+        Retorna a imagem com o filtro de detecção de bordas usando o operador Sobel. Recebe dois kernels
+        específicos (kx e ky) faz uma combinação entre as duas correlações da imagem.
         """
-        img1 = self.correlacao(k1)
-        img2 = self.correlacao(k2)
+        kx = [[-1,  0,  1],
+              [-2,  0,  2],
+              [-1,  0,  1]]
+        ky = [[-1, -2, -1],
+              [0,   0,  0],
+              [1,   2,  1]]
+        ox = self.correlacao(kx)
+        oy = self.correlacao(ky)
         img_bordas = Imagem.new(self.largura, self.altura)
         for i in range(self.largura):
             for j in range(self.altura):
-                o = round(math.sqrt(img1.get_pixel(i, j) ** 2 + img2.get_pixel(i, j) ** 2))
+                o = round(math.sqrt(ox.get_pixel(i, j) ** 2 + oy.get_pixel(i, j) ** 2))
                 img_bordas.set_pixel(i, j, o)
         img_bordas.corrigir_pixel_imagem()
         return img_bordas
@@ -322,11 +329,7 @@ if __name__ == '__main__':
     # Questão 6 --------------
     # Aplicar o filtro de detecção de bordas com dois kernels na imagem obra.png
     # i = Imagem.carregar('imagens_teste/obra.png')
-    # temp = i.bordas([[-1, 0, 1],
-    #                  [-2, 0, 2],
-    #                  [-1, 0, 1]], [[-1, -2, -1],
-    #                                [0,   0,  0],
-    #                                [1,   2,  1]])
+    # temp = i.bordas()
     # temp.salvar('resultados_teste/obra_bordas.png')
 
     # O código a seguir fará com que as janelas em Imagem.mostrar
