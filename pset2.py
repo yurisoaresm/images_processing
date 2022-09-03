@@ -10,16 +10,35 @@ from PIL import Image as PILImage
 
 
 def gerar_kernel_desfoque(n):
+    """
+    Gera um kernel de desfoque de tamanho n x n. Esse kernel deve possuir a
+    soma dos seus elementos igual a 1.
+    """
     return [[1 / (n ** 2) for _ in range(n)] for _ in range(n)]
 
 
 class Imagem:
+    """
+    Essa classe cria objetos de imagem. Seus atributos são altura, largura e pixels, onde
+    cada pixel é uma lista de tamanho largura X altura e cada elemento é um valor no intervalo [0, 255]
+    (preto mais escuro ao branco mais claro).
+
+    Seus métodos permitem manipular a imagem com diversos filtros, obter o valor de cada pixel
+    e alterá-los.
+    """
     def __init__(self, largura, altura, pixels):
         self.largura = largura
         self.altura = altura
         self.pixels = pixels
 
     def get_pixel(self, x, y):
+        """
+        Retorna o valor do pixel na posição (x, y). Caso a coordenada seja negativa (fora do tamanho
+        da imagem) ele obtém o pixel da posição 0; em contrapartida, se a coordenada for superior
+        ao tamanho máximo da imagem ela retorna a última posição do tamanho da imagem.
+
+        Essa condição é essencial para a aplicação da correlação.
+        """
         if x >= self.largura:
             x = self.largura - 1
         elif x < 0:
@@ -32,9 +51,16 @@ class Imagem:
         return self.pixels[(x + y * self.largura)]
 
     def set_pixel(self, x, y, c):
+        """
+        Altera o valor do pixel na posição (x, y). Os pixels da imagem são passados como lista.
+        """
         self.pixels[(x + y * self.largura)] = c
 
     def aplicar_por_pixel(self, func):
+        """
+        Altera o valor de cada pixel da imagem por meio de uma função e retorna a nova imagem
+        alterada.
+        """
         resultado = Imagem.new(self.largura, self.altura)
         for x in range(resultado.largura):
             for y in range(resultado.altura):
@@ -43,7 +69,12 @@ class Imagem:
                 resultado.set_pixel(x, y, nova_cor)
         return resultado
 
-    def arredondar_pixels_imagens(self):
+    def corrigir_pixel_imagem(self):
+        """
+        Altera os valores dos pixels que não estão no intervalo [0, 255] ou não são números inteiros.
+        Para valores negativos, o pixel é definido para 0; valores maiores que 255 têm o pixel definido para 255;
+        para números decimais, o valor é arredondado para o inteiro mais próximo.
+        """
         for i in range(self.largura):
             for j in range(self.altura):
                 pixel = self.get_pixel(i, j)
@@ -54,6 +85,10 @@ class Imagem:
                 self.set_pixel(i, j, round(pixel))
 
     def correlacao(self, kernel):
+        """
+        Retorna uma nova imagem correlacionada com um kernel. É uma função de filtragem
+        de imagem por correlação.
+        """
         meio = len(kernel) // 2           # meio do kernel independente do seu tamanho
         imagem_temp = Imagem.new(self.largura, self.altura)
         for i in range(imagem_temp.largura):
@@ -66,21 +101,38 @@ class Imagem:
         return imagem_temp
 
     def invertido(self):
+        """
+        Retorna o valor do pixel invertido.
+        """
         return self.aplicar_por_pixel(lambda c: 255 - c)
 
     def borrado(self, n):
-        return self.correlacao(gerar_kernel_desfoque(n))
+        """
+        Retorna a imagem com o filtro de borrar. Recebe um parâmetro inteiro n. Quanto maior esse valor,
+        maior o efeito de blur.
+        """
+        img_borrado = self.correlacao(gerar_kernel_desfoque(n))
+        img_borrado.corrigir_pixel_imagem()
+        return img_borrado
 
     def nitidez(self, n):
+        """
+        Retorna a imagem com o filtro de nitidez (sharpen). Recebe um parâmetro inteiro n. Quanto maior esse valor,
+        maior o efeito de nitidez.
+        """
         img_borrada = self.borrado(n)
         img_nitidez = Imagem.new(self.largura, self.altura)
         for i in range(self.largura):
             for j in range(self.altura):
                 s = round(2 * self.get_pixel(i, j) - img_borrada.get_pixel(i, j))
                 img_nitidez.set_pixel(i, j, s)
+        img_nitidez.corrigir_pixel_imagem()
         return img_nitidez
 
     def bordas(self, k1, k2):
+        """
+        Retorna a imagem com o filtro de detecção de bordas. Recebe dois kernels específicos.
+        """
         img1 = self.correlacao(k1)
         img2 = self.correlacao(k2)
         img_bordas = Imagem.new(self.largura, self.altura)
@@ -88,6 +140,7 @@ class Imagem:
             for j in range(self.altura):
                 o = round(math.sqrt(img1.get_pixel(i, j) ** 2 + img2.get_pixel(i, j) ** 2))
                 img_bordas.set_pixel(i, j, o)
+        img_bordas.corrigir_pixel_imagem()
         return img_bordas
 
     # Abaixo deste ponto estão utilitários para carregar, salvar,
@@ -245,7 +298,6 @@ if __name__ == '__main__':
     # Tópico 5.1: Desfoque | aplicar filtro na imagem gato com um kernel de desfoque de tamanho 5
     # i = Imagem.carregar('imagens_teste/gato.png')
     # temp = i.borrado(5)
-    # temp.arredondar_pixels_imagens()
     # temp.salvar('resultados_teste/gato_borrado.png')
 
     # Questão 5 --------------
@@ -264,7 +316,7 @@ if __name__ == '__main__':
     #                                [1,   2,  1]])
     # temp.salvar('resultados_teste/obra_bordas.png')
 
-    # O código a seguir fará com que as janelas em Imagem.show
+    # O código a seguir fará com que as janelas em Imagem.mostrar
     # sejam mostradas de modo apropriado, se estivermos rodando
     # interativamente ou não:
     if WINDOWS_OPENED and not sys.flags.interactive:

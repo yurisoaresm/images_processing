@@ -70,8 +70,8 @@ class TestFilters(unittest.TestCase):
                     saida = os.path.join(TEST_DIRECTORY, 'resultados_teste',
                                            '%s_blur_%02d.png' % (arquivo, kernsize))
                     input_img = pset2.Imagem.carregar(entrada)
-                    input_img_copy = pset2.Imagem(input_img.width, input_img.height, input_img.pixels)
-                    resultado = input_img.blurred(kernsize)
+                    input_img_copy = pset2.Imagem(input_img.largura, input_img.altura, input_img.pixels)
+                    resultado = input_img.borrado(kernsize)
                     esperado = pset2.Imagem.carregar(saida)
                     self.assertEqual(input_img, input_img_copy,
                                      "Cuidado para não modificar a imagem original!")
@@ -85,8 +85,8 @@ class TestFilters(unittest.TestCase):
                     saida = os.path.join(TEST_DIRECTORY, 'resultados_teste',
                                            '%s_sharp_%02d.png' % (arquivo, kernsize))
                     input_img = pset2.Imagem.carregar(entrada)
-                    input_img_copy = pset2.Imagem(input_img.width, input_img.height, input_img.pixels)
-                    resultado = input_img.sharpened(kernsize)
+                    input_img_copy = pset2.Imagem(input_img.largura, input_img.altura, input_img.pixels)
+                    resultado = input_img.nitidez(kernsize)
                     esperado = pset2.Imagem.carregar(saida)
                     self.assertEqual(input_img, input_img_copy,
                                      "Cuidado para não modificar a imagem original!")
@@ -95,12 +95,18 @@ class TestFilters(unittest.TestCase):
     def test_bordas(self):
         for arquivo in ('cogumelo', 'gatos', 'xadrez'):
             with self.subTest(f=arquivo):
+                k1 = [[-1, 0, 1],
+                      [-2, 0, 2],
+                      [-1, 0, 1]]
+                k2 = [[-1, -2, -1],
+                      [0,   0,  0],
+                      [1,   2,  1]]
                 entrada = os.path.join(TEST_DIRECTORY, 'imagens_teste', '%s.png' % arquivo)
                 saida = os.path.join(TEST_DIRECTORY, 'resultados_teste', '%s_edges.png' % arquivo)
                 input_img = pset2.Imagem.carregar(entrada)
-                input_img_copy = pset2.Imagem(input_img.width, input_img.height, input_img.pixels)
-                resultado = input_img.edges()
-                esperado = pset2.Image.load(saida)
+                input_img_copy = pset2.Imagem(input_img.largura, input_img.altura, input_img.pixels)
+                resultado = input_img.bordas(k1, k2)
+                esperado = pset2.Imagem.carregar(saida)
                 self.assertEqual(input_img, input_img_copy,
                                  "Cuidado para não modificar a imagem original!")
                 self.assertEqual(resultado, esperado)
