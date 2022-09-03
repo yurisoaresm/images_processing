@@ -1,4 +1,17 @@
-#!/usr/bin/env python3
+"""
+Title       : Problem Set 2: Processamento de Imagens
+Description : Programa com algoritmos para manipulação de imagens (desfocar, inverter,
+            : aumentar a nitidez etc).
+
+Author      : Yuri Soares (github.com/yurisoaresm)
+Created     : Staff da MIT 6.009 (from MIT 6.009: Fundamentals of Programming)
+Orientador  : prof. Abrantes Araújo Silva Filho (github.com/abrantesasf)
+
+Language    : Python
+Version     : 3.10.6
+"""
+
+# !/usr/bin/env python3
 
 # ATENÇÃO: NENHUM IMPORT ADICIONAL É PERMITIDO!
 import sys
